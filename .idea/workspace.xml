@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3064d927-495f-42b0-a3dc-a70ba4f55886" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.junie/guidelines.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/background.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/fonts/JetBrainsMono-Regular.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/fonts/JetBrainsSans-Regular.woff2" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/javascript.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/technologies.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/webstorm-icon-logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/webstorm-logo.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/vite-env.d.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tsconfig.json" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0048091578646285" />
+      <entry key="MS500" value="1.3440632975396853" />
+      <entry key="S2" value="1.9850115169126892" />
+      <entry key="S5" value="3.194953121884278" />
+      <entry key="S10" value="4.446251755332559" />
+      <entry key="S30" value="5.932821424634902" />
+      <entry key="S60" value="6.43479910054072" />
+      <entry key="M2" value="6.790695149846727" />
+      <entry key="M5" value="7.730012696504348" />
+      <entry key="M10" value="8.783053655158778" />
+      <entry key="M15" value="9.346134801777644" />
+      <entry key="M30" value="10.06938913985323" />
+      <entry key="H1" value="10.505325710874988" />
+      <entry key="H2" value="10.744839199670952" />
+      <entry key="H4" value="10.870400050785994" />
+      <entry key="D1" value="10.978113945578034" />
+      <entry key="W1" value="10.99686634137837" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="4.961343726849243E-115" />
+      <entry key="S5" value="1.897753174506488E-46" />
+      <entry key="S10" value="1.3775896248544006E-23" />
+      <entry key="S30" value="2.397212982896348E-8" />
+      <entry key="S60" value="1.5482935712894856E-4" />
+      <entry key="M2" value="0.012443044528126888" />
+      <entry key="M5" value="0.17296995088961314" />
+      <entry key="M10" value="0.4158965627287789" />
+      <entry key="M15" value="0.5571732025522308" />
+      <entry key="M30" value="0.7464403543165592" />
+      <entry key="H1" value="0.863967797036764" />
+      <entry key="H2" value="0.9294986804922124" />
+      <entry key="H4" value="0.9641051190052938" />
+      <entry key="D1" value="0.9939260306388279" />
+      <entry key="W1" value="0.9991300227996673" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.008608591252957822" />
+      <entry key="MS500" value="0.6721064126584857" />
+      <entry key="S2" value="1.737963441649332" />
+      <entry key="S5" value="3.0797679629946257" />
+      <entry key="S10" value="4.382628587622525" />
+      <entry key="S30" value="5.909458351541344" />
+      <entry key="S60" value="6.4229218015181715" />
+      <entry key="M2" value="6.7969594117887775" />
+      <entry key="M5" value="7.900170253677906" />
+      <entry key="M10" value="9.197310920190333" />
+      <entry key="M15" value="9.902126957358053" />
+      <entry key="M30" value="10.81518059169514" />
+      <entry key="H1" value="11.368951076962905" />
+      <entry key="H2" value="11.674161671789857" />
+      <entry key="H4" value="11.834415749801039" />
+      <entry key="D1" value="11.972024884133198" />
+      <entry key="W1" value="11.99599420346348" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3M6qeKYfkEAvVoRquHksaFLbJ7L" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/aman/Projects/meetmind&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;/home/aman/Projects/meetmind/src/main.ts&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/home/aman/Projects/meetmind/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;configurable.group.tools&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/aman/Projects/meetmind/node_modules/typescript/lib&quot;
+  }
+}</component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-56aff7b04f6f-JavaScript-WS-263.7307.202" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3064d927-495f-42b0-a3dc-a70ba4f55886" name="Changes" comment="" />
+      <created>1794681461487</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1794681461487</updated>
+      <workItem from="1794681465890" duration="1612000" />
+      <workItem from="1794683174785" duration="84000" />
+      <workItem from="1794683266060" duration="30000" />
+      <workItem from="1794683632972" duration="1335000" />
+      <workItem from="1794770638162" duration="2593000" />
+      <workItem from="1794773709795" duration="322000" />
+      <workItem from="1794813353112" duration="2800000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

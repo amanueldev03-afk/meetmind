@@ -1,1 +1,1 @@
-# meetmind
+- Database setup and Drizzle schema configured
