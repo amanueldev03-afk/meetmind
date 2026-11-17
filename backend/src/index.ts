@@ -2,6 +2,8 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import healthRoutes from './health/health.routes.js';
+import authRoutes from './modules/auth/auth.routes.js';
+import groupRoutes from './modules/groups/groups.routes.js';
 import { bot } from './services/telegram.service.js';
 
 const app = express();
@@ -14,6 +16,8 @@ if (!Number.isInteger(port) || port <= 0) {
 app.use(cors());
 app.use(express.json());
 app.use('/health', healthRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', groupRoutes);
 
 const server = app.listen(port, () => {
   console.log(`MeetMind API listening on port ${port}.`);
