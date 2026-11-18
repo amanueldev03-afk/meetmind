@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { users } from '../db/schema/users.schema.js';
+import type { GroupMembership } from '../db/schema/users.schema.js';
 import { jwtPayloadSchema } from '../modules/auth/auth.schema.js';
 import { getJwtSecret } from '../modules/auth/auth.utils.js';
 
@@ -15,6 +16,7 @@ declare global {
   namespace Express {
     interface Request {
       user?: AuthenticatedUser;
+      groupMembership?: GroupMembership;
     }
   }
 }
