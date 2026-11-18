@@ -1,7 +1,7 @@
 import type { RequestHandler } from 'express';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
-import { groupMemberships, groupRoleEnum } from '../db/schema/users.schema.js';
+import { groupMemberships, groupRoleEnum, telegramGroups } from '../db/schema/users.schema.js';
 import { groupIdSchema } from '../modules/groups/groups.schema.js';
 
 type GroupRole = (typeof groupRoleEnum.enumValues)[number];
@@ -32,8 +32,17 @@ export function requireGroupRole(allowedRoles: readonly GroupRole[]): RequestHan
     }
 
     const [membership] = await db
-      .select({ role: groupMemberships.role })
+      .select({
+        id: groupMemberships.id,
+        groupId: groupMemberships.groupId,
+        userId: groupMemberships.userId,
+        role: groupMemberships.role,
+        joinedAt: groupMemberships.joinedAt,
+        lastVerifiedAt: groupMemberships.lastVerifiedAt,
+        isSuspended: telegramGroups.isSuspended,
+      })
       .from(groupMemberships)
+      .innerJoin(telegramGroups, eq(groupMemberships.groupId, telegramGroups.id))
       .where(
         and(
           eq(groupMemberships.groupId, parsedGroupId.data),
@@ -42,11 +51,13 @@ export function requireGroupRole(allowedRoles: readonly GroupRole[]): RequestHan
       )
       .limit(1);
 
-    if (!membership || !allowedRoles.includes(membership.role)) {
+    if (!membership || membership.isSuspended || !allowedRoles.includes(membership.role)) {
       res.status(403).json({ error: 'You do not have the required group role.' });
       return;
     }
 
+    const { isSuspended: _isSuspended, ...groupMembership } = membership;
+    req.groupMembership = groupMembership;
     next();
   };
 }

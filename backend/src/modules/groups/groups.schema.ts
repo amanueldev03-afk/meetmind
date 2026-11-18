@@ -11,7 +11,7 @@ export const groupMemberParamsSchema = groupParamsSchema.extend({
 });
 
 export const updateGroupSchema = z.object({
-  retentionDays: z.number().int().positive(),
+  retentionDays: z.number().int().min(1).max(365),
 });
 
 export const updateMemberRoleSchema = z.object({

@@ -24,7 +24,9 @@ const server = app.listen(port, () => {
 });
 
 if (process.env.NODE_ENV !== 'production') {
-  void bot.start().catch((error: unknown) => {
+  void bot.start({
+    allowed_updates: ['message', 'chat_member', 'my_chat_member'],
+  }).catch((error: unknown) => {
     console.error('Telegram bot long polling failed:', error);
     process.exitCode = 1;
     server.close();

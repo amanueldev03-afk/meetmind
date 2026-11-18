@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { eq } from 'drizzle-orm';
 import { db } from '../../db/index.js';
 import { groupMemberships, users } from '../../db/schema/users.schema.js';
+import { syncUserGroupMemberships } from '../../services/telegram.service.js';
 import { devLoginSchema, telegramLoginSchema } from './auth.schema.js';
 import { getJwtSecret, signAuthToken } from './auth.utils.js';
 
@@ -113,6 +114,8 @@ export async function telegramLogin(req: Request, res: Response): Promise<void> 
     return;
   }
 
+  await syncUserGroupMemberships(user.id, user.telegramUserId!);
+
   res.json({
     token: signAuthToken(user.id, jwtSecret),
     user: getProfile(user),
@@ -143,6 +146,8 @@ export async function devLogin(req: Request, res: Response): Promise<void> {
     res.status(500).json({ error: 'JWT authentication is not configured.' });
     return;
   }
+
+  await syncUserGroupMemberships(user.id, user.telegramUserId!);
 
   res.json({
     token: signAuthToken(user.id, jwtSecret),

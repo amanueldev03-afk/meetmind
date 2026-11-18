@@ -35,11 +35,12 @@ export async function listGroupMembers(req: Request, res: Response): Promise<voi
 
   const members = await db
     .select({
-      id: users.id,
+      userId: users.id,
       displayName: users.displayName,
       telegramUsername: users.telegramUsername,
       avatarUrl: users.avatarUrl,
       role: groupMemberships.role,
+      lastVerifiedAt: groupMemberships.lastVerifiedAt,
     })
     .from(groupMemberships)
     .innerJoin(users, eq(groupMemberships.userId, users.id))
