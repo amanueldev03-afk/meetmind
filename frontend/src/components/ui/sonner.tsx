@@ -1,12 +1,14 @@
+import * as React from "react"
 import { useTheme } from "next-themes"
 import { Toaster as Sonner, type ToasterProps } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
-const Toaster = ({ ...props }: ToasterProps) => {
+const Toaster = React.forwardRef<React.ComponentRef<typeof Sonner>, ToasterProps>((props, ref) => {
   const { theme = "system" } = useTheme()
 
   return (
     <Sonner
+      ref={ref}
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
@@ -42,6 +44,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       {...props}
     />
   )
-}
+})
+
+Toaster.displayName = "Toaster"
 
 export { Toaster }

@@ -84,6 +84,21 @@ function PlaceholderPage({ title, description }: { title: string; description: s
   );
 }
 
+function GroupSettingsAccess() {
+  const { selectedGroupId } = useGroupContext();
+
+  return (
+    <CanAccess
+      resource="groups"
+      action="update"
+      params={{ groupId: selectedGroupId ?? '' }}
+      fallback={<Navigate to="/" replace />}
+    >
+      <GroupSettingsPage />
+    </CanAccess>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -141,11 +156,7 @@ export default function App() {
             />
             <Route
               path="group-settings"
-              element={
-                <CanAccess resource="groups" action="update" fallback={<Navigate to="/" replace />}>
-                  <GroupSettingsPage />
-                </CanAccess>
-              }
+              element={<GroupSettingsAccess />}
             />
             <Route
               path="admin"

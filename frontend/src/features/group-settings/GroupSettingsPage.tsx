@@ -51,10 +51,13 @@ export function GroupSettingsPage() {
   } = useGroupContext();
   const [retentionDays, setRetentionDays] = useState(selectedGroup?.retentionDays ?? 30);
   const [savingSettings, setSavingSettings] = useState(false);
-  const [savingMemberId, setSavingMemberId] = useState<string | null>(null);
+  const [savingMemberIds, setSavingMemberIds] = useState<Set<string>>(() => new Set());
   const {
     data,
     isLoading: loadingMembers,
+    isError: memberQueryFailed,
+    error: memberQueryError,
+    isFetching: refreshingMembers,
     refetch,
   } = useList<GroupMember>({
     resource: 'groupMembers',
@@ -69,7 +72,7 @@ export function GroupSettingsPage() {
 
   async function updateRole(userId: string, role: GroupRole) {
     if (!selectedGroupId) return;
-    setSavingMemberId(userId);
+    setSavingMemberIds((current) => new Set(current).add(userId));
     try {
       await apiClient.patch(
         `/api/groups/${encodeURIComponent(selectedGroupId)}/members/${encodeURIComponent(userId)}/role`,
@@ -80,7 +83,11 @@ export function GroupSettingsPage() {
     } catch (error) {
       toast.error(errorText(error));
     } finally {
-      setSavingMemberId(null);
+      setSavingMemberIds((current) => {
+        const next = new Set(current);
+        next.delete(userId);
+        return next;
+      });
     }
   }
 
@@ -161,6 +168,21 @@ export function GroupSettingsPage() {
               <LoaderCircle className="size-4 animate-spin" />
               Loading members…
             </div>
+          ) : memberQueryFailed ? (
+            <div className="space-y-3 py-8 text-center">
+              <p role="alert" className="text-sm text-destructive">
+                Could not load group members: {errorText(memberQueryError)}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void refetch()}
+                disabled={refreshingMembers}
+              >
+                {refreshingMembers && <LoaderCircle className="animate-spin" />}
+                Retry
+              </Button>
+            </div>
           ) : members.length === 0 ? (
             <p className="py-10 text-center text-sm text-muted-foreground">No members found.</p>
           ) : (
@@ -207,7 +229,7 @@ export function GroupSettingsPage() {
                               void updateRole(member.userId, value);
                             }
                           }}
-                          disabled={savingMemberId === member.userId}
+                          disabled={savingMemberIds.has(member.userId)}
                         >
                           <SelectTrigger aria-label={`Role for ${member.displayName}`} className="w-36">
                             <SelectValue />

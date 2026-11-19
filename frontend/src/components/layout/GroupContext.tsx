@@ -19,6 +19,7 @@ interface GroupContextValue {
   selectedGroupId: string | null;
   selectedGroup: TelegramGroup | undefined;
   loading: boolean;
+  error: string | null;
   setSelectedGroupId: (groupId: string) => void;
   updateSelectedGroup: (changes: Partial<TelegramGroup>) => void;
   refreshGroups: () => Promise<void>;
@@ -32,6 +33,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
     () => localStorage.getItem(SELECTED_GROUP_KEY),
   );
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const refreshGroups = useCallback(async () => {
     setLoading(true);
@@ -44,6 +46,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
         telegramChatId: group.telegramGroupId,
       }));
       setGroups(nextGroups);
+      setError(null);
       setCurrentSelectedGroupId((current) => {
         const stored = current ?? localStorage.getItem(SELECTED_GROUP_KEY);
         const selected = nextGroups.some((group) => group.id === stored)
@@ -72,6 +75,7 @@ export function GroupProvider({ children }: { children: ReactNode }) {
           : error instanceof Error
             ? error.message
             : 'Could not load your groups.';
+      setError(message);
       toast.error(message);
       throw error;
     } finally {
@@ -105,11 +109,12 @@ export function GroupProvider({ children }: { children: ReactNode }) {
       selectedGroupId,
       selectedGroup: groups.find((group) => group.id === selectedGroupId),
       loading,
+      error,
       setSelectedGroupId,
       updateSelectedGroup,
       refreshGroups,
     }),
-    [groups, selectedGroupId, loading, setSelectedGroupId, updateSelectedGroup, refreshGroups],
+    [groups, selectedGroupId, loading, error, setSelectedGroupId, updateSelectedGroup, refreshGroups],
   );
 
   return <GroupContext.Provider value={value}>{children}</GroupContext.Provider>;

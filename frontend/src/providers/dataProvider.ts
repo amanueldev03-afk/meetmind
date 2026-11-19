@@ -70,12 +70,19 @@ export const dataProvider: DataProvider = {
     meta,
   }: GetOneParams): Promise<GetOneResponse<TData>> => {
     if (resource === 'groups') {
-      const response = await apiClient.get<{ groups: TelegramGroup[] }>('/api/groups');
+      const response = await apiClient.get<{
+        groups: Array<Omit<TelegramGroup, 'telegramChatId'> & { telegramGroupId: string }>;
+      }>('/api/groups');
       const group = response.data.groups.find((item) => item.id === String(id));
       if (!group) {
         throw new Error('Group not found.');
       }
-      return { data: group as unknown as TData };
+      return {
+        data: {
+          ...group,
+          telegramChatId: group.telegramGroupId,
+        } as unknown as TData,
+      };
     }
 
     if (resource === 'groupMembers' || resource === 'members') {

@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+declare module 'axios' {
+  interface AxiosRequestConfig<D = any, P = any> {
+    authSessionRevision?: number;
+  }
+
+  interface InternalAxiosRequestConfig<D = any, P = any> {
+    authSessionRevision?: number;
+  }
+}
+
 export type GroupRole = 'OWNER' | 'MANAGER' | 'MEMBER';
 
 export interface UserProfile {
@@ -49,13 +59,40 @@ export const AUTH_USER_KEY = 'meetmind.auth.user';
 export const AUTH_MEMBERSHIPS_KEY = 'meetmind.auth.memberships';
 export const SELECTED_GROUP_KEY = 'meetmind.selectedGroupId';
 
+let authSessionRevision = 0;
+
+export interface AuthSessionSnapshot {
+  token: string | null;
+  revision: number;
+}
+
+export function captureAuthSession(): AuthSessionSnapshot {
+  return {
+    token: localStorage.getItem(AUTH_TOKEN_KEY),
+    revision: authSessionRevision,
+  };
+}
+
+export function isAuthSessionCurrent(session: AuthSessionSnapshot): boolean {
+  return (
+    session.revision === authSessionRevision &&
+    session.token === localStorage.getItem(AUTH_TOKEN_KEY)
+  );
+}
+
+export function beginAuthSession(): number {
+  authSessionRevision += 1;
+  return authSessionRevision;
+}
+
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
 apiClient.interceptors.request.use((config) => {
+  config.authSessionRevision ??= authSessionRevision;
   const token = localStorage.getItem(AUTH_TOKEN_KEY);
-  if (token) {
+  if (token && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -67,6 +104,7 @@ export function saveIdentity(identity: AuthIdentity): void {
 }
 
 export function clearAuthStorage(): void {
+  beginAuthSession();
   localStorage.removeItem(AUTH_TOKEN_KEY);
   localStorage.removeItem(AUTH_USER_KEY);
   localStorage.removeItem(AUTH_MEMBERSHIPS_KEY);

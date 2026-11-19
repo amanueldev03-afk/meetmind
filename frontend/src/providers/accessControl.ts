@@ -20,14 +20,17 @@ function readStored<T>(key: string): T | undefined {
 }
 
 export const accessControlProvider: AccessControlProvider = {
-  can: async ({ resource, action }) => {
+  can: async ({ resource, action, params }) => {
     const user = readStored<UserProfile>(AUTH_USER_KEY);
     if (user?.isSystemAdmin) {
       return { can: true };
     }
 
     const memberships = readStored<GroupMembership[]>(AUTH_MEMBERSHIPS_KEY) ?? [];
-    const groupId = localStorage.getItem(SELECTED_GROUP_KEY);
+    const groupId =
+      typeof params?.groupId === 'string'
+        ? params.groupId
+        : localStorage.getItem(SELECTED_GROUP_KEY);
     const role = memberships.find((membership) => membership.groupId === groupId)?.role;
 
     if (resource === 'groups' && (action === 'update' || action === 'edit')) {

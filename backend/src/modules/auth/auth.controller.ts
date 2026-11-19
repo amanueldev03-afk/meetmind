@@ -124,6 +124,11 @@ export async function telegramLogin(req: Request, res: Response): Promise<void> 
 }
 
 export async function devLogin(req: Request, res: Response): Promise<void> {
+  if (process.env.NODE_ENV !== 'development') {
+    res.status(404).json({ error: 'Developer login is only available in development.' });
+    return;
+  }
+
   const parsed = devLoginSchema.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid Telegram ID.' });

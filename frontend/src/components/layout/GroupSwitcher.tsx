@@ -1,4 +1,5 @@
 import { ChevronsUpDown } from 'lucide-react';
+import { Button } from '../ui/button';
 import { useGroupContext } from './GroupContext';
 import {
   Select,
@@ -9,10 +10,26 @@ import {
 } from '../ui/select';
 
 export function GroupSwitcher() {
-  const { groups, selectedGroupId, setSelectedGroupId, loading } = useGroupContext();
+  const { groups, selectedGroupId, setSelectedGroupId, loading, error, refreshGroups } = useGroupContext();
 
   if (loading) {
     return <div className="h-9 w-full animate-pulse rounded-lg bg-muted" />;
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-2 rounded-lg border border-destructive/30 p-3">
+        <p role="alert" className="text-sm text-destructive">{error}</p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => void refreshGroups().catch(() => undefined)}
+        >
+          Retry
+        </Button>
+      </div>
+    );
   }
 
   if (groups.length === 0) {
@@ -25,6 +42,7 @@ export function GroupSwitcher() {
 
   return (
     <Select
+      items={groups.map((group) => ({ value: group.id, label: group.title }))}
       value={selectedGroupId ?? ''}
       onValueChange={(value) => {
         if (value) setSelectedGroupId(value);
