@@ -12,7 +12,13 @@ import type {
   CreateParams,
   CreateResponse,
 } from '@refinedev/core';
-import { apiClient, type GroupMember, type TelegramGroup } from '../types/api.types';
+import {
+  apiClient,
+  type GroupMember,
+  type MeetingAttendanceRecord,
+  type MeetingRecord,
+  type TelegramGroup,
+} from '../types/api.types';
 
 function endpoint(resource: string): string {
   if (resource.startsWith('/api/')) {
@@ -25,7 +31,7 @@ function endpoint(resource: string): string {
 function groupIdFromMeta(meta: Record<string, unknown> | undefined): string {
   const groupId = meta?.groupId;
   if (typeof groupId !== 'string' || groupId.length === 0) {
-    throw new Error('A groupId is required to access group members.');
+    throw new Error('A groupId is required to access this resource.');
   }
   return groupId;
 }
@@ -54,6 +60,31 @@ export const dataProvider: DataProvider = {
       return {
         data: response.data.members as unknown as TData[],
         total: response.data.members.length,
+      };
+    }
+
+    if (resource === 'meetings') {
+      const groupId = groupIdFromMeta(meta);
+      const response = await apiClient.get<{ meetings: MeetingRecord[] }>('/api/meetings', {
+        params: { groupId },
+      });
+      return {
+        data: response.data.meetings as unknown as TData[],
+        total: response.data.meetings.length,
+      };
+    }
+
+    if (resource === 'meetingAttendance') {
+      const meetingId = meta?.meetingId;
+      if (typeof meetingId !== 'string' || meetingId.length === 0) {
+        throw new Error('A meetingId is required to fetch attendance.');
+      }
+      const response = await apiClient.get<{ attendance: MeetingAttendanceRecord[] }>(
+        `/api/meetings/${encodeURIComponent(meetingId)}/attendance`,
+      );
+      return {
+        data: response.data.attendance as unknown as TData[],
+        total: response.data.attendance.length,
       };
     }
 
@@ -123,6 +154,14 @@ export const dataProvider: DataProvider = {
       return { data: response.data.membership as TData };
     }
 
+    if (resource === 'meetings') {
+      const response = await apiClient.patch<{ meeting: MeetingRecord }>(
+        `/api/meetings/${encodeURIComponent(String(id))}/cancel`,
+        variables,
+      );
+      return { data: response.data.meeting as unknown as TData };
+    }
+
     const response = await apiClient.patch(
       endpoint(`${resource}/${encodeURIComponent(String(id))}`),
       variables,
@@ -133,6 +172,18 @@ export const dataProvider: DataProvider = {
     resource,
     variables,
   }: CreateParams<TVariables>): Promise<CreateResponse<TData>> => {
+    if (resource === 'meetings') {
+      const response = await apiClient.post<{ meetings: MeetingRecord[] }>(
+        endpoint(resource),
+        variables,
+      );
+      const meeting = response.data.meetings[0];
+      if (!meeting) {
+        throw new Error('The server did not return the scheduled meeting.');
+      }
+      return { data: meeting as unknown as TData };
+    }
+
     const response = await apiClient.post(endpoint(resource), variables);
     return { data: response.data as TData };
   },

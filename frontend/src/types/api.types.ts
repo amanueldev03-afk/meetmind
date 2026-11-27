@@ -45,6 +45,39 @@ export interface GroupMember {
   lastVerifiedAt: string;
 }
 
+export type MeetingStatus = 'SCHEDULED' | 'LIVE' | 'ENDING' | 'ENDED' | 'CANCELLED';
+
+export interface MeetingRecord {
+  id: string;
+  groupId: string;
+  createdById: string | null;
+  creatorDisplayName: string | null;
+  title: string;
+  agenda: string | null;
+  status: MeetingStatus;
+  scheduledAt: string;
+  startedAt: string | null;
+  endedAt: string | null;
+  seriesId: string | null;
+  isRecurring: boolean;
+  expiresAt: string | null;
+  livekitRoomName: string | null;
+  recordAudio: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface MeetingAttendanceRecord {
+  userId: string | null;
+  displayName: string | null;
+  telegramUsername: string | null;
+  avatarUrl: string | null;
+  participantName: string | null;
+  joinedAt: string;
+  leftAt: string | null;
+  durationSeconds: number;
+}
+
 export interface AuthIdentity {
   user: UserProfile;
   memberships: GroupMembership[];

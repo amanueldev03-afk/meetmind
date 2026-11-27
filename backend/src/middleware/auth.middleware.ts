@@ -2,6 +2,7 @@ import type { RequestHandler } from 'express';
 import jwt from 'jsonwebtoken';
 import { eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
+import type { Meeting } from '../db/schema/meetings.schema.js';
 import { users } from '../db/schema/users.schema.js';
 import type { GroupMembership } from '../db/schema/users.schema.js';
 import { jwtPayloadSchema } from '../modules/auth/auth.schema.js';
@@ -17,6 +18,7 @@ declare global {
     interface Request {
       user?: AuthenticatedUser;
       groupMembership?: GroupMembership;
+      meeting?: Meeting;
     }
   }
 }

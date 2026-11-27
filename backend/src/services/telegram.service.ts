@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { Bot } from 'grammy';
+import { Bot, InlineKeyboard } from 'grammy';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
 import { auditLogs } from '../db/schema/audit.schema.js';
@@ -20,6 +20,90 @@ if (!token) {
 }
 
 export const bot = new Bot(token);
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+function getMeetingJoinUrl(meetingId: string): string {
+  const frontendUrl = (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/+$/, '');
+  return `${frontendUrl}/meetings/${encodeURIComponent(meetingId)}/join`;
+}
+
+function getMeetingJoinKeyboard(meetingId: string, joinUrl: string): InlineKeyboard {
+  if (joinUrl.startsWith('https://')) {
+    return new InlineKeyboard().url('🎥 Join Meeting Room', joinUrl);
+  }
+  return new InlineKeyboard().text('🔗 Get Join Link', `join_link:${meetingId}`);
+}
+
+function getJoinLinkText(joinUrl: string): string {
+  return `<a href="${escapeHtml(joinUrl)}">🎥 Join Meeting Room</a>`;
+}
+
+export async function announceMeetingToGroup(params: {
+  telegramChatId: string;
+  meetingId: string;
+  title: string;
+  agenda?: string | null;
+  scheduledAt: Date;
+  expiresAt: Date;
+}): Promise<void> {
+  const joinUrl = getMeetingJoinUrl(params.meetingId);
+  const agendaText = params.agenda?.trim();
+  const agendaPreview = agendaText
+    ? `${agendaText.slice(0, 500)}${agendaText.length > 500 ? '...' : ''}`
+    : 'No agenda provided.';
+  const message = [
+    `<b>${escapeHtml(params.title)}</b>`,
+    `Starts: ${escapeHtml(params.scheduledAt.toUTCString())}`,
+    `Agenda: ${escapeHtml(agendaPreview)}`,
+    `Available until: ${escapeHtml(params.expiresAt.toUTCString())}`,
+    ...(joinUrl.startsWith('https://') ? [] : [getJoinLinkText(joinUrl)]),
+  ].join('\n');
+
+  try {
+    await bot.api.sendMessage(params.telegramChatId, message, {
+      parse_mode: 'HTML',
+      reply_markup: getMeetingJoinKeyboard(params.meetingId, joinUrl),
+    });
+  } catch (error) {
+    console.error(`Failed to announce meeting ${params.meetingId} to Telegram:`, error);
+  }
+}
+
+export async function sendMeetingReminderToGroup(params: {
+  telegramChatId: string;
+  meetingId: string;
+  message: string;
+}): Promise<void> {
+  const joinUrl = getMeetingJoinUrl(params.meetingId);
+  const message = [
+    escapeHtml(params.message),
+    ...(joinUrl.startsWith('https://') ? [] : [getJoinLinkText(joinUrl)]),
+  ].join('\n');
+
+  await bot.api.sendMessage(params.telegramChatId, message, {
+    parse_mode: 'HTML',
+    reply_markup: getMeetingJoinKeyboard(params.meetingId, joinUrl),
+  });
+}
+
+bot.on('callback_query:data', async (ctx) => {
+  const match = /^join_link:([0-9a-f-]{36})$/i.exec(ctx.callbackQuery.data);
+  if (!match) {
+    return;
+  }
+
+  const joinUrl = getMeetingJoinUrl(match[1]);
+  await ctx.answerCallbackQuery({ text: 'Join link sent to the group.' });
+  await ctx.reply(getJoinLinkText(joinUrl), { parse_mode: 'HTML' });
+});
 
 async function findLinkedGroup(telegramGroupId: string): Promise<{ id: string } | undefined> {
   const [group] = await db
