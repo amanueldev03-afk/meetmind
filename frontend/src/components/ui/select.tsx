@@ -70,7 +70,7 @@ const SelectContent = React.forwardRef<
       SelectPrimitive.Positioner.Props,
       "align" | "alignOffset" | "side" | "sideOffset" | "alignItemWithTrigger"
     >
-}>(({
+>(({
   className,
   children,
   side = "bottom",

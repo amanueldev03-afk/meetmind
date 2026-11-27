@@ -1,8 +1,10 @@
 import type { RequestHandler } from 'express';
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/index.js';
+import { meetings } from '../db/schema/meetings.schema.js';
 import { groupMemberships, groupRoleEnum, telegramGroups } from '../db/schema/users.schema.js';
 import { groupIdSchema } from '../modules/groups/groups.schema.js';
+import { z } from 'zod';
 
 type GroupRole = (typeof groupRoleEnum.enumValues)[number];
 
@@ -25,7 +27,12 @@ export function requireGroupRole(allowedRoles: readonly GroupRole[]): RequestHan
       return;
     }
 
-    const parsedGroupId = groupIdSchema.safeParse(req.params.groupId);
+    const groupIdCandidate =
+      req.params.groupId ??
+      (req.method === 'POST'
+        ? (req.body?.groupId ?? req.query.groupId)
+        : (req.query.groupId ?? req.body?.groupId));
+    const parsedGroupId = groupIdSchema.safeParse(groupIdCandidate);
     if (!parsedGroupId.success) {
       res.status(400).json({ error: 'Invalid group ID.' });
       return;
@@ -57,6 +64,62 @@ export function requireGroupRole(allowedRoles: readonly GroupRole[]): RequestHan
     }
 
     const { isSuspended: _isSuspended, ...groupMembership } = membership;
+    req.groupMembership = groupMembership;
+    next();
+  };
+}
+
+export function requireMeetingRole(allowedRoles: readonly GroupRole[]): RequestHandler {
+  return async (req, res, next) => {
+    if (!req.user) {
+      res.status(401).json({ error: 'Authentication is required.' });
+      return;
+    }
+
+    const parsedMeetingId = z.string().uuid().safeParse(req.params.id);
+    if (!parsedMeetingId.success) {
+      res.status(400).json({ error: 'Invalid meeting ID.' });
+      return;
+    }
+
+    const [meeting] = await db
+      .select()
+      .from(meetings)
+      .where(eq(meetings.id, parsedMeetingId.data))
+      .limit(1);
+
+    if (!meeting) {
+      res.status(404).json({ error: 'Meeting not found.' });
+      return;
+    }
+
+    const [membership] = await db
+      .select({
+        id: groupMemberships.id,
+        groupId: groupMemberships.groupId,
+        userId: groupMemberships.userId,
+        role: groupMemberships.role,
+        joinedAt: groupMemberships.joinedAt,
+        lastVerifiedAt: groupMemberships.lastVerifiedAt,
+        isSuspended: telegramGroups.isSuspended,
+      })
+      .from(groupMemberships)
+      .innerJoin(telegramGroups, eq(groupMemberships.groupId, telegramGroups.id))
+      .where(
+        and(
+          eq(groupMemberships.groupId, meeting.groupId),
+          eq(groupMemberships.userId, req.user.id),
+        ),
+      )
+      .limit(1);
+
+    if (!membership || membership.isSuspended || !allowedRoles.includes(membership.role)) {
+      res.status(403).json({ error: 'You do not have the required group role.' });
+      return;
+    }
+
+    const { isSuspended: _isSuspended, ...groupMembership } = membership;
+    req.meeting = meeting;
     req.groupMembership = groupMembership;
     next();
   };

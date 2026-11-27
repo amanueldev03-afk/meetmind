@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Authenticated, CanAccess, Refine, useGetIdentity } from '@refinedev/core';
 import routerBindings from '@refinedev/react-router-v6';
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom';
@@ -8,10 +9,17 @@ import { Sidebar } from './components/layout/Sidebar';
 import { Toaster } from './components/ui/sonner';
 import { LoginPage } from './features/auth/LoginPage';
 import { GroupSettingsPage } from './features/group-settings/GroupSettingsPage';
+import { MeetingsListPage } from './features/meeting-hub/MeetingsListPage';
 import { accessControlProvider } from './providers/accessControl';
 import { authProvider } from './providers/authProvider';
 import { dataProvider } from './providers/dataProvider';
 import type { AuthIdentity } from './types/api.types';
+
+const LiveMeetingPage = lazy(() =>
+  import('./features/meeting-hub/LiveMeetingPage').then((module) => ({
+    default: module.LiveMeetingPage,
+  })),
+);
 
 function WorkspaceLayout() {
   return (
@@ -136,13 +144,19 @@ export default function App() {
             }
           >
             <Route index element={<DashboardPage />} />
+            <Route path="meetings" element={<MeetingsListPage />} />
             <Route
-              path="meetings"
+              path="meetings/:id/join"
               element={
-                <PlaceholderPage
-                  title="Meetings"
-                  description="Your connected group meetings will appear here."
-                />
+                <Suspense
+                  fallback={
+                    <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted-foreground">
+                      Loading live meeting…
+                    </div>
+                  }
+                >
+                  <LiveMeetingPage />
+                </Suspense>
               }
             />
             <Route
